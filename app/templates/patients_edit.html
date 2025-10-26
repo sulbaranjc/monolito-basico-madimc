@@ -2,9 +2,9 @@
 {% block title %}MEDIMIC — Modificar paciente{% endblock %}
 
 {% block extra_css %}
-  {# Reutilizamos el CSS de crear para mantener estilo #}
-  <link rel="stylesheet" href="/static/css/patients_create.css">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/patients_create.css') }}">
 {% endblock %}
+
 
 {% block content %}
   <div class="form-page">
@@ -85,5 +85,5 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="/static/js/patients_edit.js" defer></script>
+  <script src="{{ url_for('static', path='js/patients_edit.js') }}" defer></script>
 {% endblock %}

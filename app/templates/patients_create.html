@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}MEDIMIC — Crear paciente{% endblock %}
 {% block extra_css %}
-  <link rel="stylesheet" href="/static/css/patients_create.css">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/patients_create.css') }}">
 {% endblock %}
+
 
 {% block content %}
   <h2>Crear paciente</h2>
@@ -95,5 +96,5 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="/static/js/patients_create.js" defer></script>
+  <script src="{{ url_for('static', path='js/patients_create.js') }}" defer></script>
 {% endblock %}

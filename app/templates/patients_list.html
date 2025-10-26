@@ -3,11 +3,11 @@
 
 {# ✅ CSS específico de esta vista #}
 {% block extra_css %}
-  <link rel="stylesheet" href="/static/css/patients_list.css">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/patients_list.css') }}">
 {% endblock %}
 
 {% block content %}
-  <h2>Pacientes</h2>
+  <h2>Listado de Pacientes</h2>
 
   <div class="actions-bar">
     <a class="btn-primary" href="/patients/create">Agregar paciente</a>
@@ -20,11 +20,11 @@
           <tr>
             <th>Nombre</th>
             <th>Fecha nac.</th>
-            <th>Sexo al nacer</th>
+            <th>Sexo</th>
             <th>Email</th>
             <th>Teléfono</th>
             <th>IMC</th>
-            <th>Categoría IMC</th>
+            <th>Categoría</th>
             <th class="col-actions">Acciones</th>
           </tr>
         </thead>
@@ -72,5 +72,5 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="/static/js/patients_list.js" defer></script>
+  <script src="{{ url_for('static', path='js/patients_list.js') }}" defer></script>
 {% endblock %}
