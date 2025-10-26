@@ -2,21 +2,27 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <title>{% block title %}MEDIMIC{% endblock %}</title>
-  <link rel="stylesheet" href="/static/css/main.css" />
+
+  <!-- CSS global -->
+  <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
+
+  <!-- CSS específico por vista -->
   {% block extra_css %}{% endblock %}
 </head>
 <body>
-<header class="site-header">
-  <div class="container header-content">
-    <img src="/static/img/medimic_logo.png" alt="Logo MEDIMIC" class="logo">
-    <h1 class="system-title">Gestión Médica de IMC</h1>
-    <nav>
-      <a href="/patients">Pacientes</a>
-      <a href="/patients/create">Crear paciente</a>
-    </nav>
-  </div>
-</header>
+  <header class="site-header">
+    <div class="container header-content">
+      <img src="{{ url_for('static', path='img/medimic_logo.png') }}" alt="Logo MEDIMIC" class="logo">
+      <h1 class="system-title">Gestión Médica de IMC</h1>
+      <nav>
+        <a href="/patients">Pacientes</a>
+        <a href="/patients/create">Crear paciente</a>
+      </nav>
+    </div>
+  </header>
 
   <main class="container">
     {% block content %}{% endblock %}
@@ -28,8 +34,7 @@
     </div>
   </footer>
 
-  <!-- JS externo (si la vista lo necesita puede sobreescribir este bloque) -->
-  {% block scripts %}
-  {% endblock %}
+  <!-- JS por vista -->
+  {% block scripts %}{% endblock %}
 </body>
 </html>

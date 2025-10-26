@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+{% block title %}MEDIMIC — Modificar paciente{% endblock %}
+
+{% block extra_css %}
+  {# Reutilizamos el CSS de crear para mantener estilo #}
+  <link rel="stylesheet" href="/static/css/patients_create.css">
+{% endblock %}
+
+{% block content %}
+  <div class="form-page">
+    <h2>Modificar paciente</h2>
+    <p class="subtitle">Edición de datos · recalcula IMC si aplica</p>
+
+    {% if errors and errors|length %}
+      <div class="alert alert-error">
+        <strong>Errores del formulario:</strong>
+        <ul>
+          {% for e in errors %}
+            <li>{{ e }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="card">
+      <form action="/patients/{{ patient_id }}/edit" method="post" novalidate class="grid-form">
+        <label>
+          <span>Nombre</span>
+          <input name="first_name" required value="{{ form_data.first_name or '' }}" />
+        </label>
+
+        <label>
+          <span>Apellido</span>
+          <input name="last_name" required value="{{ form_data.last_name or '' }}" />
+        </label>
+
+        <label>
+          <span>Fecha de nacimiento</span>
+          <input type="date" name="date_of_birth" required value="{{ form_data.date_of_birth or '' }}" />
+        </label>
+
+        <label>
+          <span>Sexo al nacer</span>
+          <select name="sex_at_birth" required>
+            {% set sx = form_data.sex_at_birth or '' %}
+            <option value="" disabled {{ '' == sx and 'selected' or '' }}>Selecciona…</option>
+            <option value="Masculino" {{ 'Masculino' == sx and 'selected' or '' }}>Masculino</option>
+            <option value="Femenino"  {{ 'Femenino'  == sx and 'selected' or '' }}>Femenino</option>
+            <option value="Otro"      {{ 'Otro'      == sx and 'selected' or '' }}>Otro</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Correo electrónico</span>
+          <input type="email" name="email" placeholder="nombre@ejemplo.com" value="{{ form_data.email or '' }}" />
+        </label>
+
+        <label>
+          <span>Teléfono</span>
+          <input name="phone" placeholder="+34 600 000 000" value="{{ form_data.phone or '' }}" />
+        </label>
+
+        <label>
+          <span>Altura (cm)</span>
+          <input name="height_cm" inputmode="decimal" placeholder="Ej.: 174" value="{{ form_data.height_cm or '' }}" />
+        </label>
+
+        <label>
+          <span>Peso (kg)</span>
+          <input name="weight_kg" inputmode="decimal" placeholder="Ej.: 82.5" value="{{ form_data.weight_kg or '' }}" />
+        </label>
+
+        <label class="full checkbox">
+          <input type="checkbox" name="consent_data_processing" {{ form_data.consent_data_processing and 'checked' or '' }}>
+          <span>Acepto el consentimiento para el tratamiento de mis datos personales.</span>
+        </label>
+
+        <div class="actions full">
+          <button type="submit" class="btn-primary">Guardar cambios</button>
+          <a href="/patients" class="btn-secondary" style="text-decoration:none;display:inline-block;">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/js/patients_edit.js" defer></script>
+{% endblock %}

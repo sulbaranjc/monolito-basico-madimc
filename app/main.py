@@ -236,3 +236,177 @@ def delete_patient(request: Request, patient_id: str):
     PATIENTS.pop(patient_id, None)
     # PRG: tras eliminar, volvemos al listado
     return RedirectResponse(url="/patients", status_code=303)
+
+# ============================
+# ✏️ Editar paciente (GET formulario)
+# ============================
+@app.get("/patients/{patient_id}/edit", response_class=HTMLResponse)
+def get_edit_patient(request: Request, patient_id: str):
+    # Buscar paciente; si no existe, 404 simple (mensaje didáctico)
+    patient = PATIENTS.get(patient_id)
+    if not patient:
+        return HTMLResponse(
+            content=f"<h3>Paciente no encontrado</h3><p>ID: {patient_id}</p>",
+            status_code=404,
+        )
+
+    # Preparamos form_data con los datos existentes
+    form_data = {
+        "first_name": patient.get("first_name") or "",
+        "last_name": patient.get("last_name") or "",
+        "date_of_birth": patient.get("date_of_birth") or "",
+        "sex_at_birth": patient.get("sex_at_birth") or "",  # 'Masculino' | 'Femenino' | 'Otro'
+        "email": patient.get("email") or "",
+        "phone": patient.get("phone") or "",
+        "height_cm": "" if patient.get("height_cm") is None else str(patient.get("height_cm")),
+        "weight_kg": "" if patient.get("weight_kg") is None else str(patient.get("weight_kg")),
+        "consent_data_processing": bool(patient.get("consent_data_processing")),
+    }
+
+    return templates.TemplateResponse(
+        "patients_edit.html",
+        {
+            "request": request,
+            "patient_id": patient_id,
+            "form_data": form_data,
+            "errors": [],
+        },
+    )
+
+
+# ============================
+# 💾 Editar paciente (POST procesar)
+# ============================
+@app.post("/patients/{patient_id}/edit", response_class=HTMLResponse)
+async def post_edit_patient(
+    request: Request,
+    patient_id: str,
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    date_of_birth: str = Form(...),  # AAAA-MM-DD
+    sex_at_birth: str = Form(...),   # 'Masculino' | 'Femenino' | 'Otro'
+    email: Optional[str] = Form(None),
+    phone: Optional[str] = Form(None),
+    height_cm: Optional[str] = Form(None),
+    weight_kg: Optional[str] = Form(None),
+    consent_data_processing: Optional[str] = Form(None),  # "on" si marcado
+):
+    # Verificamos existencia
+    patient = PATIENTS.get(patient_id)
+    if not patient:
+        return HTMLResponse(
+            content=f"<h3>Paciente no encontrado</h3><p>ID: {patient_id}</p>",
+            status_code=404,
+        )
+
+    # --- Validaciones (idénticas a crear) ---
+    errors = []
+
+    first_name_norm = normalize_name(first_name)
+    last_name_norm  = normalize_name(last_name)
+
+    if consent_data_processing != "on":
+        errors.append("Debes aceptar el consentimiento para el tratamiento de datos.")
+
+    dob_obj: Optional[date] = None
+    try:
+        dob_obj = date.fromisoformat(date_of_birth)
+        if dob_obj > date.today():
+            errors.append("La fecha de nacimiento debe estar en el pasado.")
+    except Exception:
+        errors.append("Formato de fecha inválido. Usa AAAA-MM-DD.")
+
+    # Sexo al nacer: validar y normalizar a Mayúscula inicial
+    raw_sex = (sex_at_birth or "").strip()
+    sex_lc = raw_sex.lower()
+    allowed_sex_es = {"masculino", "femenino", "otro"}
+    if sex_lc not in allowed_sex_es:
+        errors.append("El campo 'Sexo al nacer' es inválido.")
+    sex_value = {"masculino": "Masculino", "femenino": "Femenino", "otro": "Otro"}[sex_lc]
+
+    if email and "@" not in email:
+        errors.append("El correo electrónico no es válido.")
+    if phone and len(phone) < 7:
+        errors.append("El número de teléfono parece demasiado corto.")
+
+    def parse_float_or_none(v: Optional[str]) -> Optional[float]:
+        if v is None or v.strip() == "":
+            return None
+        return float(v)
+
+    height_val: Optional[float] = None
+    weight_val: Optional[float] = None
+    try:
+        height_val = parse_float_or_none(height_cm)
+        weight_val = parse_float_or_none(weight_kg)
+    except ValueError:
+        errors.append("La altura y el peso deben ser valores numéricos.")
+
+    if height_val is not None and not (100.0 <= height_val <= 250.0):
+        errors.append("La altura (cm) debe estar entre 100 y 250.")
+    if weight_val is not None and not (20.0 <= weight_val <= 300.0):
+        errors.append("El peso (kg) debe estar entre 20 y 300.")
+
+    if errors:
+        # Re-render con valores enviados por el usuario
+        return templates.TemplateResponse(
+            "patients_edit.html",
+            {
+                "request": request,
+                "patient_id": patient_id,
+                "form_data": {
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "date_of_birth": date_of_birth,
+                    "sex_at_birth": sex_value,  # mantener capitalizado
+                    "email": email,
+                    "phone": phone,
+                    "height_cm": height_cm,
+                    "weight_kg": weight_kg,
+                    "consent_data_processing": consent_data_processing == "on",
+                },
+                "errors": errors,
+            },
+            status_code=400,
+        )
+
+    # --- Actualización del registro existente ---
+    now = datetime.utcnow().isoformat() + "Z"
+
+    patient["first_name"] = first_name_norm
+    patient["last_name"]  = last_name_norm
+    patient["date_of_birth"] = dob_obj.isoformat() if dob_obj else None
+    patient["sex_at_birth"] = sex_value
+    patient["email"] = email or None
+    patient["phone"] = phone or None
+    patient["consent_data_processing"] = True
+    patient["updated_at"] = now
+
+    # Altura / peso actuales
+    patient["height_cm"] = height_val
+    patient["weight_kg"] = weight_val
+
+    # Recalcular IMC según los valores actuales
+    if (height_val is not None) and (weight_val is not None):
+        bmi_val = calculate_bmi(weight_val, height_val)
+        patient["bmi_last"] = bmi_val
+        patient["bmi_category_last"] = bmi_category(bmi_val)
+        patient["bmi_last_measured_at"] = now
+        patient["bmi_inputs_updated_at"] = now
+    else:
+        # Si falta alguno, dejamos IMC como no calculado
+        patient["bmi_last"] = None
+        patient["bmi_category_last"] = None
+        patient["bmi_last_measured_at"] = None
+        patient["bmi_inputs_updated_at"] = None
+
+    # Conveniencias UI recalculadas
+    patient["computed"] = {
+        "display_name": f"{last_name_norm}, {first_name_norm}",
+        "age_years": calculate_age_years(dob_obj) if dob_obj else None,
+        "is_adult": (calculate_age_years(dob_obj) >= 18) if dob_obj else None,
+        "contactable": bool((email and email.strip()) or (phone and phone.strip())),
+    }
+
+    # PRG: volver al listado
+    return RedirectResponse(url="/patients", status_code=303)

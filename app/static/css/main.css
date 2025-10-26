@@ -30,7 +30,6 @@ main { flex: 1 0 auto; padding: 24px 0; }  /* empuja el footer hacia abajo */
 /* ============================
    🔝 Encabezado con isotipo y título centrado
    ============================ */
-/* === Encabezado con isotipo a la izquierda y texto centrado === */
 .site-header {
   background: #f8fafc;
   border-bottom: 1px solid #e5e7eb;
@@ -78,11 +77,12 @@ nav a {
   text-decoration: none;
   font-weight: 500;
   font-size: 1rem;
+  transition: color 0.2s ease-in-out;
 }
 
 nav a:hover {
   color: #084298;
-  text-decoration: underline;
+  text-decoration: none; /* 🔥 antes subrayaba */
 }
 
 /* ============================
@@ -119,32 +119,55 @@ nav a:hover {
 .col-actions { width: 180px; }
 .row-actions { display: flex; gap: 8px; }
 
-/* Botones */
+/* ============================
+   🎨 Botones (unificación visual)
+   ============================ */
 .btn-primary,
 .btn-secondary,
-.btn-danger {
+.btn-danger,
+a.btn-primary,
+a.btn-secondary,
+a.btn-danger {
   border: none;
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 0.95rem;
+  display: inline-block;
+  text-decoration: none !important; /* 🔥 elimina subrayado */
+  text-align: center;
+  transition: all 0.2s ease-in-out;
 }
 
-.btn-primary {
+/* 🔵 Primario */
+.btn-primary, a.btn-primary {
   background: #0d6efd;
   color: white;
 }
-.btn-primary:hover { background: #0b5ed7; }
+.btn-primary:hover, a.btn-primary:hover {
+  background: #0b5ed7;
+  text-decoration: none;
+}
 
-.btn-secondary {
+/* ⚫ Secundario */
+.btn-secondary, a.btn-secondary {
   background: #6b7280;
   color: white;
 }
+.btn-secondary:hover, a.btn-secondary:hover {
+  background: #52565c;
+  text-decoration: none;
+}
 
-.btn-danger {
+/* 🔴 Peligro */
+.btn-danger, a.btn-danger {
   background: #dc3545;
   color: white;
 }
-.btn-danger:hover { background: #bb2d3b; }
+.btn-danger:hover, a.btn-danger:hover {
+  background: #bb2d3b;
+  text-decoration: none;
+}
 
 /* ============================
    📱 Ajustes responsive suaves

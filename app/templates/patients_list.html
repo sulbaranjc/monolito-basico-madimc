@@ -29,36 +29,41 @@
           </tr>
         </thead>
         <tbody>
-          {% for p in patients %}
-            <tr>
-              <td>{{ p.computed.display_name }}</td>
-              <td>{{ p.date_of_birth or "—" }}</td>
-              <td>{{ p.sex_at_birth or "—" }}</td>
-              <td>{{ p.email or "—" }}</td>
-              <td>{{ p.phone or "—" }}</td>
-              <td>
-                {% if p.bmi_last is not none %}
-                  {{ "%.2f"|format(p.bmi_last) }}
-                {% else %}—{% endif %}
-              </td>
-              <td>{{ p.bmi_category_last or "—" }}</td>
-              <td class="actions-cell">
-                {# Placeholder de Modificar (aún sin lógica) #}
-                <button type="button" class="btn-secondary" disabled>Modificar</button>
+  {% for p in patients %}
+    <tr>
+      <td>{{ p.computed.display_name }}</td>
+      <td>{{ p.date_of_birth or "—" }}</td>
+      <td>{{ p.sex_at_birth or "—" }}</td>
+      <td>{{ p.email or "—" }}</td>
+      <td>{{ p.phone or "—" }}</td>
+      <td>
+        {% if p.bmi_last is not none %}
+          {{ "%.2f"|format(p.bmi_last) }}
+        {% else %}
+          — 
+        {% endif %}
+      </td>
+      <td>{{ p.bmi_category_last or "—" }}</td>
+      <td class="actions-cell">
+        {# ✏️ Botón Modificar (nuevo) #}
+        <a class="btn-secondary" href="/patients/{{ p.patient_id }}/edit">
+          Modificar
+        </a>
 
-                {# 🗑️ Eliminar: form POST por fila con confirmación JS #}
-                <form
-                  action="/patients/{{ p.patient_id }}/delete"
-                  method="post"
-                  class="inline-form"
-                  onsubmit="return confirmDelete(this)"
-                  data-display-name="{{ p.computed.display_name }}">
-                  <button type="submit" class="btn-danger">Eliminar</button>
-                </form>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
+        {# 🗑️ Botón Eliminar con confirmación JS #}
+        <form
+          action="/patients/{{ p.patient_id }}/delete"
+          method="post"
+          class="inline-form"
+          onsubmit="return confirmDelete(this)"
+          data-display-name="{{ p.computed.display_name }}">
+          <button type="submit" class="btn-danger">Eliminar</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+</tbody>
+
       </table>
     </div>
   {% else %}
