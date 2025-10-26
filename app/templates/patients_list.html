@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block title %}MEDIMIC — Listar pacientes{% endblock %}
+
+{% block content %}
+  <h2>Pacientes</h2>
+  <div class="actions-bar">
+    <a class="btn-primary" href="/patients/create">Agregar paciente</a>
+  </div>
+
+  {% if patients and patients|length %}
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Fecha nac.</th>
+            <th>Sexo al nacer</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>IMC</th>
+            <th>Categoría IMC</th>
+            <th class="col-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in patients %}
+            <tr>
+              <td>{{ p.computed.display_name }}</td>
+              <td>{{ p.date_of_birth }}</td>
+              <td>{{ p.sex_at_birth }}</td>
+              <td>{{ p.email or "—" }}</td>
+              <td>{{ p.phone or "—" }}</td>
+              <td>{{ p.bmi_last if p.bmi_last is not none else "—" }}</td>
+              <td>{{ p.bmi_category_last or "—" }}</td>
+              <td class="row-actions">
+                <!-- Sin lógica por ahora -->
+                <button type="button" class="btn-secondary" data-action="edit" data-id="{{ p.patient_id }}">Modificar</button>
+                <button type="button" class="btn-danger"   data-action="delete" data-id="{{ p.patient_id }}">Eliminar</button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No hay pacientes para mostrar.</p>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/js/patients_list.js" defer></script>
+{% endblock %}
