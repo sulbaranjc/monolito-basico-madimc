@@ -1,5 +1,35 @@
-/* === Encabezado con logo === */
+/* ============================
+   📐 Layout base (sticky footer)
+   ============================ */
+html, body { height: 100%; }
 
+body {
+  min-height: 100vh;          /* ocupa todo el alto de la ventana */
+  display: flex;              /* apila header, main, footer */
+  flex-direction: column;
+  background: #ffffff;
+  color: #111827;
+  margin: 0;
+}
+
+.site-header { flex-shrink: 0; }  /* el header no colapsa */
+main { flex: 1 0 auto; padding: 24px 0; }  /* empuja el footer hacia abajo */
+
+.site-footer {
+  margin-top: auto;           /* clave del sticky footer */
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+  padding: 12px 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Contenedor general */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+/* ============================
+   🔝 Encabezado con isotipo y título centrado
+   ============================ */
 /* === Encabezado con isotipo a la izquierda y texto centrado === */
 .site-header {
   background: #f8fafc;
@@ -54,13 +84,14 @@ nav a:hover {
   color: #084298;
   text-decoration: underline;
 }
-/* Ajuste de cuerpo */
-body {
-  background: #ffffff;
-  color: #111827;
-}
 
-/* Tabla más moderna */
+/* ============================
+   🧾 Listado / tablas / acciones
+   ============================ */
+.actions-bar { margin-top: 12px; }
+
+.table-wrapper { margin-top: 16px; }
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -73,6 +104,7 @@ body {
   border: 1px solid #e5e7eb;
   padding: 8px 10px;
   text-align: left;
+  vertical-align: middle;
 }
 
 .data-table th {
@@ -84,6 +116,10 @@ body {
   background: #f9fafb;
 }
 
+.col-actions { width: 180px; }
+.row-actions { display: flex; gap: 8px; }
+
+/* Botones */
 .btn-primary,
 .btn-secondary,
 .btn-danger {
@@ -97,10 +133,7 @@ body {
   background: #0d6efd;
   color: white;
 }
-
-.btn-primary:hover {
-  background: #0b5ed7;
-}
+.btn-primary:hover { background: #0b5ed7; }
 
 .btn-secondary {
   background: #6b7280;
@@ -111,7 +144,16 @@ body {
   background: #dc3545;
   color: white;
 }
+.btn-danger:hover { background: #bb2d3b; }
 
-.btn-danger:hover {
-  background: #bb2d3b;
+/* ============================
+   📱 Ajustes responsive suaves
+   ============================ */
+@media (max-width: 820px) {
+  .logo { height: 80px; }
+  .system-title { font-size: 1.6rem; }
+  nav { gap: 16px; }
+  .container { padding: 0 16px; }
+  .col-actions { width: 140px; }
+  .row-actions { gap: 6px; }
 }
