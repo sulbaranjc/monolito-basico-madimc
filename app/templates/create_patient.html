@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>MEDIMIC — Crear Paciente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; }
+    .container { max-width: 820px; margin: 0 auto; }
+    h1 { margin-bottom: 8px; }
+    form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+    label { display: flex; flex-direction: column; font-size: 0.9rem; gap: 4px; }
+    input, select { padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
+    .full { grid-column: 1 / -1; }
+    .actions { grid-column: 1 / -1; display: flex; gap: 12px; }
+    button { padding: 10px 16px; border: 0; border-radius: 6px; background: #0d6efd; color: white; cursor: pointer; }
+    button:hover { background: #0b5ed7; }
+    .errors { background: #fff4f4; border: 1px solid #ffc9c9; color: #c92a2a; padding: 12px; border-radius: 6px; margin-top: 16px; }
+    .result { background: #f3f8ff; border: 1px solid #bfd3ff; color: #0b3d91; padding: 12px; border-radius: 6px; margin-top: 16px; }
+    small { color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Crear paciente</h1>
+    <p><small>Monolito FastAPI + Jinja2 — persistencia en memoria (MVP)</small></p>
+
+    {% if errors and errors|length %}
+      <div class="errors">
+        <strong>Errores del formulario:</strong>
+        <ul>
+          {% for e in errors %}
+            <li>{{ e }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    {% if result %}
+      <div class="result">
+        <strong>Paciente creado correctamente.</strong>
+        <div><b>ID:</b> {{ result.patient_id }}</div>
+        <div><b>Nombre:</b> {{ result.display_name }}</div>
+        <div><b>Edad:</b> {{ result.age_years }}</div>
+        <div><b>Sexo al nacer:</b> {{ result.sex_at_birth }}</div>
+        {% if result.bmi_last %}
+          <div><b>IMC:</b> {{ result.bmi_last }} ({{ result.bmi_category_last }})</div>
+        {% else %}
+          <div><b>IMC:</b> No calculado (requiere altura y peso)</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <form action="/patients/create" method="post" novalidate>
+      <label>
+        Nombre
+        <input name="first_name" required value="{{ form_data.first_name or '' }}" />
+      </label>
+
+      <label>
+        Apellido
+        <input name="last_name" required value="{{ form_data.last_name or '' }}" />
+      </label>
+
+      <label>
+        Fecha de nacimiento
+        <input type="date" name="date_of_birth" required value="{{ form_data.date_of_birth or '' }}" />
+      </label>
+
+      <label>
+        Sexo al nacer
+        <select name="sex_at_birth" required>
+          {% set sx = form_data.sex_at_birth or '' %}
+          <option value="" disabled {{ '' == sx and 'selected' or '' }}>Selecciona…</option>
+          <option value="male"   {{ 'male'   == sx and 'selected' or '' }}>masculino</option>
+          <option value="female" {{ 'female' == sx and 'selected' or '' }}>femenino</option>
+          <option value="other"  {{ 'other'  == sx and 'selected' or '' }}>otro</option>
+        </select>
+      </label>
+
+      <label>
+        Correo electrónico
+        <input type="email" name="email" placeholder="nombre@ejemplo.com" value="{{ form_data.email or '' }}" />
+      </label>
+
+      <label>
+        Teléfono
+        <input name="phone" placeholder="+34 600 000 000" value="{{ form_data.phone or '' }}" />
+      </label>
+
+      <label>
+        Altura (cm)
+        <input name="height_cm" inputmode="decimal" placeholder="Ej.: 174" value="{{ form_data.height_cm or '' }}" />
+      </label>
+
+      <label>
+        Peso (kg)
+        <input name="weight_kg" inputmode="decimal" placeholder="Ej.: 82.5" value="{{ form_data.weight_kg or '' }}" />
+      </label>
+
+      <label class="full" style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+        <input type="checkbox" name="consent_data_processing" {{ form_data.consent_data_processing and 'checked' or '' }}>
+        <span>Acepto el consentimiento para el tratamiento de mis datos personales.</span>
+      </label>
+
+      <div class="actions">
+        <button type="submit">Registrar</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
