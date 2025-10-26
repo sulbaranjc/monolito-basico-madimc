@@ -5,17 +5,16 @@
   <link rel="stylesheet" href="{{ url_for('static', path='css/patients_create.css') }}">
 {% endblock %}
 
-
 {% block content %}
   <div class="form-page">
     <h2>Modificar paciente</h2>
     <p class="subtitle">Edición de datos · recalcula IMC si aplica</p>
 
-    {% if errors and errors|length %}
+    {% if errors_list and errors_list|length %}
       <div class="alert alert-error">
         <strong>Errores del formulario:</strong>
         <ul>
-          {% for e in errors %}
+          {% for e in errors_list %}
             <li>{{ e }}</li>
           {% endfor %}
         </ul>
@@ -27,16 +26,19 @@
         <label>
           <span>Nombre</span>
           <input name="first_name" required value="{{ form_data.first_name or '' }}" />
+          {% if errors.first_name %}<small class="field-error">{{ errors.first_name|join(', ') }}</small>{% endif %}
         </label>
 
         <label>
           <span>Apellido</span>
           <input name="last_name" required value="{{ form_data.last_name or '' }}" />
+          {% if errors.last_name %}<small class="field-error">{{ errors.last_name|join(', ') }}</small>{% endif %}
         </label>
 
         <label>
           <span>Fecha de nacimiento</span>
           <input type="date" name="date_of_birth" required value="{{ form_data.date_of_birth or '' }}" />
+          {% if errors.date_of_birth %}<small class="field-error">{{ errors.date_of_birth|join(', ') }}</small>{% endif %}
         </label>
 
         <label>
@@ -48,16 +50,19 @@
             <option value="Femenino"  {{ 'Femenino'  == sx and 'selected' or '' }}>Femenino</option>
             <option value="Otro"      {{ 'Otro'      == sx and 'selected' or '' }}>Otro</option>
           </select>
+          {% if errors.sex_at_birth %}<small class="field-error">{{ errors.sex_at_birth|join(', ') }}</small>{% endif %}
         </label>
 
         <label>
           <span>Correo electrónico</span>
           <input type="email" name="email" placeholder="nombre@ejemplo.com" value="{{ form_data.email or '' }}" />
+          {% if errors.email %}<small class="field-error">{{ errors.email|join(', ') }}</small>{% endif %}
         </label>
 
         <label>
           <span>Teléfono</span>
           <input name="phone" placeholder="+34 600 000 000" value="{{ form_data.phone or '' }}" />
+          {% if errors.phone %}<small class="field-error">{{ errors.phone|join(', ') }}</small>{% endif %}
         </label>
 
         <label>
@@ -73,6 +78,7 @@
         <label class="full checkbox">
           <input type="checkbox" name="consent_data_processing" {{ form_data.consent_data_processing and 'checked' or '' }}>
           <span>Acepto el consentimiento para el tratamiento de mis datos personales.</span>
+          {% if errors.consent_data_processing %}<small class="field-error">{{ errors.consent_data_processing|join(', ') }}</small>{% endif %}
         </label>
 
         <div class="actions full">
