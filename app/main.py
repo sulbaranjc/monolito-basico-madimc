@@ -227,3 +227,12 @@ def list_patients(request: Request):
         "patients_list.html",
         {"request": request, "patients": patients_sorted},
     )
+# ============================
+# 🗑️ Eliminar paciente (in-memory)
+# ============================
+@app.post("/patients/{patient_id}/delete")
+def delete_patient(request: Request, patient_id: str):
+    # Eliminación segura en memoria; si no existe, no rompe
+    PATIENTS.pop(patient_id, None)
+    # PRG: tras eliminar, volvemos al listado
+    return RedirectResponse(url="/patients", status_code=303)

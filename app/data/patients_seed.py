@@ -39,7 +39,7 @@ SEEDED_PATIENTS: Dict[str, Dict[str, Any]] = {
         "first_name": "Carlos",
         "last_name": "López",
         "date_of_birth": "1988-09-10",
-        "sex_at_birth": "Masculino",
+        "sex_at_birth": "Masculino  ",
         "email": "carlos.lopez@example.com",
         "phone": "+34 611 223 344",
         "consent_data_processing": True,
