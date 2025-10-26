@@ -1,5 +1,8 @@
 {% extends "layout.html" %}
 {% block title %}MEDIMIC — Crear paciente{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="/static/css/patients_create.css">
+{% endblock %}
 
 {% block content %}
   <h2>Crear paciente</h2>
@@ -47,16 +50,18 @@
       <input type="date" name="date_of_birth" required value="{{ form_data.date_of_birth or '' }}" />
     </label>
 
-    <label>
-      <span>Sexo al nacer</span>
-      <select name="sex_at_birth" required>
-        {% set sx = form_data.sex_at_birth or '' %}
-        <option value="" disabled {{ '' == sx and 'selected' or '' }}>Selecciona…</option>
-        <option value="male"   {{ 'male'   == sx and 'selected' or '' }}>masculino</option>
-        <option value="female" {{ 'female' == sx and 'selected' or '' }}>femenino</option>
-        <option value="other"  {{ 'other'  == sx and 'selected' or '' }}>otro</option>
-      </select>
-    </label>
+<label>
+  <span>Sexo al nacer</span>
+  <select name="sex_at_birth" required>
+    {% set sx = form_data.sex_at_birth or '' %}
+    <option value="" disabled {{ '' == sx and 'selected' or '' }}>Selecciona…</option>
+    <option value="Masculino" {{ 'Masculino' == sx and 'selected' or '' }}>Masculino</option>
+    <option value="Femenino" {{ 'Femenino' == sx and 'selected' or '' }}>Femenino</option>
+    <option value="Otro" {{ 'Otro' == sx and 'selected' or '' }}>Otro</option>
+  </select>
+</label>
+
+
 
     <label>
       <span>Correo electrónico</span>

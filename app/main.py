@@ -1,24 +1,41 @@
+# app/main.py
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from uuid import uuid4
 from datetime import datetime, date
 from typing import Dict, Any, Optional
+from pathlib import Path
+
 from app.data.patients_seed import SEEDED_PATIENTS
 
-app = FastAPI(title="MEDIMIC Monolith (MVP)", version="0.1.1")
+# ============================
+# 🚀 App base
+# ============================
+app = FastAPI(title="MEDIMIC Monolith (MVP)", version="0.1.3")
 
-# Montamos archivos estáticos (CSS/JS) en /static
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+# ============================
+# 🗂️ Rutas absolutas (templates / static)
+# ============================
+BASE_DIR = Path(__file__).resolve().parent            # .../app
+TEMPLATES_DIR = BASE_DIR / "templates"
+STATIC_DIR = BASE_DIR / "static"
 
-# Jinja2 apuntando a /app/templates
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 # ============================
 # 📦 "Base de datos" en memoria
 # ============================
 PATIENTS: Dict[str, Dict[str, Any]] = dict(SEEDED_PATIENTS)
+
+# 🔁 Migración en caliente del seed (si vino en inglés -> español)
+_SEX_EN_TO_ES = {"male": "Masculino", "female": "Femenino", "other": "Otro"}
+for _p in PATIENTS.values():
+    v = (_p.get("sex_at_birth") or "").strip().lower()
+    if v in _SEX_EN_TO_ES:
+        _p["sex_at_birth"] = _SEX_EN_TO_ES[v]
 
 # ============================
 # 🔧 Helpers de dominio (comentarios en español, código en inglés)
@@ -29,18 +46,15 @@ def normalize_name(value: str) -> str:
     return value.title()
 
 def calculate_age_years(dob: date) -> int:
-    # Calcula edad en años truncados respecto a hoy
     today = date.today()
     years = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
     return max(0, years)
 
 def calculate_bmi(weight_kg: float, height_cm: float) -> float:
-    # IMC = peso(kg) / (altura(m)^2), redondeado a 2 decimales
     h_m = height_cm / 100.0
     return round(weight_kg / (h_m ** 2), 2)
 
 def bmi_category(bmi: float) -> str:
-    # Categoría OMS en español
     if bmi < 18.5:
         return "bajo peso"
     if bmi < 25.0:
@@ -54,43 +68,45 @@ def bmi_category(bmi: float) -> str:
 # ============================
 @app.get("/health", response_class=HTMLResponse)
 def health(_: Request):
-    # Respuesta mínima para verificar servicio
     return "<pre>{\"status\":\"ok\"}</pre>"
 
 # ============================
 # 👤 Vistas de Paciente (crear)
 # ============================
-
 @app.get("/patients/create", response_class=HTMLResponse)
 def get_create_patient(request: Request):
-    # Renderiza formulario vacío sin estilos inline ni JS embebido
     return templates.TemplateResponse(
         "patients_create.html",
-        {"request": request, "form_data": {}, "errors": [], "result": None},
+        {"request": request, "form_data": {}, "errors": []},
     )
 
+# ============================
+# 📨 Vistas de Paciente (crear) - Procesar formulario
+# ============================
 @app.post("/patients/create", response_class=HTMLResponse)
 async def post_create_patient(
     request: Request,
     first_name: str = Form(...),
     last_name: str = Form(...),
     date_of_birth: str = Form(...),  # AAAA-MM-DD
-    sex_at_birth: str = Form(...),   # 'male' | 'female' | 'other'
+    sex_at_birth: str = Form(...),   # 'Masculino' | 'Femenino' | 'Otro'
     email: Optional[str] = Form(None),
     phone: Optional[str] = Form(None),
     height_cm: Optional[str] = Form(None),
     weight_kg: Optional[str] = Form(None),
     consent_data_processing: Optional[str] = Form(None),  # "on" si marcado
 ):
-    # --- Validaciones básicas de formulario ---
     errors = []
 
+    # Normalización de nombres
     first_name_norm = normalize_name(first_name)
     last_name_norm = normalize_name(last_name)
 
+    # Consentimiento obligatorio
     if consent_data_processing != "on":
         errors.append("Debes aceptar el consentimiento para el tratamiento de datos.")
 
+    # Fecha de nacimiento
     dob_obj: Optional[date] = None
     try:
         dob_obj = date.fromisoformat(date_of_birth)
@@ -99,17 +115,23 @@ async def post_create_patient(
     except Exception:
         errors.append("Formato de fecha inválido. Usa AAAA-MM-DD.")
 
-    if sex_at_birth not in {"male", "female", "other"}:
+    # --- Sexo al nacer: validar (es) y normalizar a Mayúscula inicial ---
+    raw_sex = (sex_at_birth or "").strip()
+    sex_lc = raw_sex.lower()
+    allowed_sex_es = {"masculino", "femenino", "otro"}
+    if sex_lc not in allowed_sex_es:
         errors.append("El campo 'Sexo al nacer' es inválido.")
+    # Valor final a persistir (con mayúscula inicial)
+    sex_value = {"masculino": "Masculino", "femenino": "Femenino", "otro": "Otro"}.get(sex_lc, raw_sex)
 
+    # Email / teléfono
     if email and "@" not in email:
         errors.append("El correo electrónico no es válido.")
     if phone and len(phone) < 7:
         errors.append("El número de teléfono parece demasiado corto.")
 
-    # Parseo de altura/peso (opcionales)
+    # Conversión numérica segura
     def parse_float_or_none(v: Optional[str]) -> Optional[float]:
-        # Convierte string a float o None si viene vacío
         if v is None or v.strip() == "":
             return None
         return float(v)
@@ -122,11 +144,13 @@ async def post_create_patient(
     except ValueError:
         errors.append("La altura y el peso deben ser valores numéricos.")
 
+    # Rangos razonables
     if height_val is not None and not (100.0 <= height_val <= 250.0):
         errors.append("La altura (cm) debe estar entre 100 y 250.")
     if weight_val is not None and not (20.0 <= weight_val <= 300.0):
         errors.append("El peso (kg) debe estar entre 20 y 300.")
 
+    # Si hay errores
     if errors:
         return templates.TemplateResponse(
             "patients_create.html",
@@ -136,7 +160,7 @@ async def post_create_patient(
                     "first_name": first_name,
                     "last_name": last_name,
                     "date_of_birth": date_of_birth,
-                    "sex_at_birth": sex_at_birth,
+                    "sex_at_birth": sex_value,
                     "email": email,
                     "phone": phone,
                     "height_cm": height_cm,
@@ -144,12 +168,11 @@ async def post_create_patient(
                     "consent_data_processing": consent_data_processing == "on",
                 },
                 "errors": errors,
-                "result": None,
             },
             status_code=400,
         )
 
-    # --- Persistencia en memoria ---
+    # --- Registro del paciente ---
     patient_id = str(uuid4())
     now = datetime.utcnow().isoformat() + "Z"
 
@@ -158,20 +181,18 @@ async def post_create_patient(
         "first_name": first_name_norm,
         "last_name": last_name_norm,
         "date_of_birth": dob_obj.isoformat() if dob_obj else None,
-        "sex_at_birth": sex_at_birth,
+        "sex_at_birth": sex_value,  # 💾 Se guarda con mayúscula inicial
         "email": email or None,
         "phone": phone or None,
         "consent_data_processing": True,
         "created_at": now,
         "updated_at": now,
-        # Entradas/salidas de IMC (última lectura)
         "height_cm": height_val,
         "weight_kg": weight_val,
         "bmi_inputs_updated_at": None,
         "bmi_last": None,
         "bmi_category_last": None,
         "bmi_last_measured_at": None,
-        # Conveniencias para UI
         "computed": {
             "display_name": f"{last_name_norm}, {first_name_norm}",
             "age_years": calculate_age_years(dob_obj) if dob_obj else None,
@@ -180,6 +201,7 @@ async def post_create_patient(
         },
     }
 
+    # Calcular IMC si aplica
     if (height_val is not None) and (weight_val is not None):
         bmi_val = calculate_bmi(weight_val, height_val)
         record["bmi_last"] = bmi_val
@@ -187,39 +209,20 @@ async def post_create_patient(
         record["bmi_last_measured_at"] = now
         record["bmi_inputs_updated_at"] = now
 
+    # Guardar en memoria
     PATIENTS[patient_id] = record
 
-    return templates.TemplateResponse(
-        "patients_create.html",
-        {
-            "request": request,
-            "form_data": {
-                "first_name": first_name_norm,
-                "last_name": last_name_norm,
-                "date_of_birth": record["date_of_birth"],
-                "sex_at_birth": sex_at_birth,
-                "email": email,
-                "phone": phone,
-                "height_cm": height_cm,
-                "weight_kg": weight_kg,
-                "consent_data_processing": True,
-            },
-            "errors": [],
-            "result": {
-                "patient_id": patient_id,
-                "display_name": record["computed"]["display_name"],
-                "age_years": record["computed"]["age_years"],
-                "sex_at_birth": sex_at_birth,
-                "bmi_last": record["bmi_last"],
-                "bmi_category_last": record["bmi_category_last"],
-            },
-        },
-    )
+    # PRG redirect
+    return RedirectResponse(url="/patients", status_code=303)
+
+# ============================
+# 👥 Vistas de Pacientes (listado)
+# ============================
 @app.get("/patients", response_class=HTMLResponse)
 def list_patients(request: Request):
-    # Preparamos la lista ordenada para mostrar en la vista (por Apellido, Nombre)
-    patients_sorted = sorted(PATIENTS.values(), key=lambda p: (p["last_name"], p["first_name"]))
-    # Renderizamos la plantilla de listado, pasando los pacientes como contexto
+    patients_sorted = sorted(
+        PATIENTS.values(), key=lambda p: (p["last_name"], p["first_name"])
+    )
     return templates.TemplateResponse(
         "patients_list.html",
         {"request": request, "patients": patients_sorted},

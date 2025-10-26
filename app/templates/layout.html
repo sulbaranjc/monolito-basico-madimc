@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <title>{% block title %}MEDIMIC{% endblock %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- CSS externo -->
-  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/main.css" />
+  {% block extra_css %}{% endblock %}
 </head>
 <body>
 <header class="site-header">
