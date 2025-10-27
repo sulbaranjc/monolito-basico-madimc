@@ -1,64 +1,201 @@
-/* ====== Formulario: Crear Paciente ====== */
+/* ============================
+   📝 ESTILOS PARA FORMULARIOS DE PACIENTES (CREAR/EDITAR)
+   ============================
+   
+   🎯 OBJETIVO: Crear un sistema de formularios elegante y funcional
+   para la creación y edición de pacientes
+   
+   📚 CONCEPTOS CLAVE:
+   - CSS Grid para layout de formularios
+   - Estados de focus para accesibilidad
+   - Responsive design para móviles
+   - Sistema de alertas consistente
+   ============================ */
 
-.form-page { max-width: 860px; margin: 0 auto; }
+/* 📝 EXPLICACIÓN: Contenedor principal del formulario con ancho limitado */
+.form-page {
+  max-width: 860px; /* Ancho máximo para evitar formularios muy anchos */
+  margin: 0 auto; /* Centrado horizontal automático */
+  /* 🎯 860px es ideal para formularios - no muy estrecho ni muy ancho */
+  /* 📱 En móviles se adaptará al 100% del ancho disponible */
+}
 
-.subtitle { color: #6b7280; margin: 6px 0 18px; }
+/* 📝 EXPLICACIÓN: Subtítulo descriptivo con color secundario */
+.subtitle {
+  color: #6b7280; /* Gris medio para texto secundario */
+  margin: 6px 0 18px; /* Espaciado: 6px arriba, 0 laterales, 18px abajo */
+  /* 🎯 El color gris hace que sea menos prominente que el título principal */
+}
 
+/* 📝 EXPLICACIÓN: Tarjeta contenedora del formulario con elevación visual */
 .card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.05);
-  padding: 20px;
+  background: #ffffff; /* Fondo blanco limpio */
+  border: 1px solid #e5e7eb; /* Borde gris muy sutil */
+  border-radius: 12px; /* Esquinas redondeadas para look moderno */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* Sombra muy sutil para profundidad */
+  padding: 20px; /* Espaciado interno generoso */
+  /* 🎭 La sombra crea una sensación de "elevación" sobre el fondo */
+  /* 🎨 rgba(0,0,0,.05) = negro con 5% de opacidad para sombra muy sutil */
 }
 
-/* Grid del formulario */
+/* ============================
+   📊 SISTEMA DE GRID PARA FORMULARIOS
+   ============================
+   
+   🎯 OBJETIVO: Organizar campos de formulario en una cuadrícula responsive
+   
+   📚 CONCEPTOS CLAVE:
+   - CSS Grid para layout bidimensional
+   - Responsive grid que se colapsa en móviles
+   - Gap para espaciado uniforme
+   ============================ */
+
+/* 📝 EXPLICACIÓN: Grid de 2 columnas para organizar campos eficientemente */
 .grid-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-top: 8px;
+  display: grid; /* Usa CSS Grid para layout */
+  grid-template-columns: 1fr 1fr; /* Dos columnas de ancho igual (1fr = 1 fracción) */
+  gap: 14px; /* Espaciado uniforme de 14px entre celdas del grid */
+  margin-top: 8px; /* Separación del contenido anterior */
+  /* 🎯 1fr 1fr significa: columna 1 toma 1 fracción, columna 2 toma 1 fracción */
+  /* 📝 Si hay 100px disponibles, cada columna tendrá 50px */
 }
 
-.grid-form label { display: flex; flex-direction: column; gap: 6px; }
-.grid-form label span { font-size: .9rem; color: #374151; }
+/* 📝 EXPLICACIÓN: Estructura de cada campo del formulario */
+.grid-form label {
+  display: flex; /* Organiza label y input verticalmente */
+  flex-direction: column; /* Texto arriba, input abajo */
+  gap: 6px; /* Espaciado entre texto del label e input */
+  /* 🎯 flex-direction: column apila los elementos verticalmente */
+}
 
+.grid-form label span {
+  font-size: 0.9rem; /* Tamaño ligeramente menor para etiquetas */
+  color: #374151; /* Gris oscuro para buena legibilidad */
+  /* 🎯 .9rem = 90% del tamaño de fuente base (usualmente 14.4px si base es 16px) */
+}
+
+/* 📝 EXPLICACIÓN: Estilos unificados para todos los elementos de entrada */
 .grid-form input,
 .grid-form select,
 .grid-form textarea {
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  outline: none;
-  font-size: 1rem;
-  transition: box-shadow .15s ease, border-color .15s ease;
+  padding: 10px 12px; /* Espaciado interno: 10px vertical, 12px horizontal */
+  border: 1px solid #d1d5db; /* Borde gris medio */
+  border-radius: 8px; /* Esquinas redondeadas */
+  outline: none; /* Elimina el outline por defecto del navegador */
+  font-size: 1rem; /* Tamaño de fuente estándar */
+  transition: box-shadow 0.15s ease, border-color 0.15s ease; /* Animaciones suaves para estados */
+  /* 🎭 transition hace que los cambios de estado sean graduales (150ms) */
+  /* 🎯 outline: none elimina el borde azul por defecto del navegador en focus */
 }
 
+/* 📝 EXPLICACIÓN: Estados de focus para accesibilidad y retroalimentación visual */
 .grid-form input:focus,
 .grid-form select:focus,
 .grid-form textarea:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+  border-color: #0d6efd; /* Borde azul al recibir focus */
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15); /* Halo azul alrededor del campo */
+  /* 🎯 El box-shadow simula un "glow" o halo de 3px alrededor del elemento */
+  /* 🎨 rgba(13,110,253,.15) = azul con 15% de opacidad para efecto sutil */
+  /* ♿ Esto es crucial para accesibilidad - indica qué campo está activo */
 }
 
-.full { grid-column: 1 / -1; }
+/* 📝 EXPLICACIÓN: Clase utilitaria para campos que ocupan toda la fila */
+.full {
+  grid-column: 1 / -1; /* Ocupa desde la columna 1 hasta la última (-1) */
+  /* 🎯 -1 en CSS Grid significa "hasta el final" */
+  /* 📝 Útil para campos como "notas" o botones que necesitan todo el ancho */
+}
 
-/* Checkbox consentimiento */
+/* ============================
+   ☑️ ESTILOS PARA CHECKBOX DE CONSENTIMIENTO
+   ============================
+   
+   🎯 OBJETIVO: Crear un checkbox accesible y visualmente claro
+   ============================ */
+
+/* 📝 EXPLICACIÓN: Layout horizontal para checkbox con texto */
 .checkbox {
-  display: flex; align-items: center; gap: 10px;
-  font-size: .95rem; color: #374151;
+  display: flex; /* Organiza checkbox y texto horizontalmente */
+  align-items: center; /* Alineación vertical al centro */
+  gap: 10px; /* Espaciado entre checkbox y texto */
+  font-size: 0.95rem; /* Tamaño ligeramente menor */
+  color: #374151; /* Color gris oscuro consistente */
+  /* 🎯 align-items: center asegura que checkbox y texto estén alineados */
 }
-.checkbox input { width: 18px; height: 18px; }
 
-/* Acciones */
-.actions { display: flex; gap: 12px; margin-top: 8px; }
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  /* 🎯 Tamaño específico para el checkbox - más grande que el por defecto para mejor usabilidad */
+}
 
-/* Alertas (usa clases globales .alert .alert-error si ya existen en main.css) */
-.alert { padding: 12px; border-radius: 8px; border: 1px solid; margin: 16px 0; }
-.alert-error   { background:#fff4f4; border-color:#ffc9c9; color:#c92a2a; }
-.alert-success { background:#f3f8ff; border-color:#bfd3ff; color:#0b3d91; }
+/* ============================
+   🎬 SECCIÓN DE BOTONES DE ACCIÓN
+   ============================
+   
+   🎯 OBJETIVO: Organizar botones de forma consistente
+   ============================ */
 
-/* Responsive */
+/* 📝 EXPLICACIÓN: Contenedor flex para botones de acción */
+.actions {
+  display: flex; /* Organiza botones horizontalmente */
+  gap: 12px; /* Espaciado uniforme entre botones */
+  margin-top: 8px; /* Separación del contenido anterior */
+  /* 🎯 gap asegura espaciado consistente sin necesidad de márgenes específicos en cada botón */
+}
+
+/* ============================
+   🚨 SISTEMA DE ALERTAS Y NOTIFICACIONES
+   ============================
+   
+   🎯 OBJETIVO: Crear un sistema consistente para mostrar mensajes al usuario
+   
+   📚 CONCEPTOS CLAVE:
+   - Colores semánticos (error = rojo, success = azul/verde)
+   - Consistencia visual con el resto de la aplicación
+   ============================ */
+
+/* 📝 EXPLICACIÓN: Estilos base compartidos para todas las alertas */
+.alert {
+  padding: 12px; /* Espaciado interno para el contenido */
+  border-radius: 8px; /* Esquinas redondeadas consistentes */
+  border: 1px solid; /* Borde que será coloreado según el tipo */
+  margin: 16px 0; /* Separación vertical de otros elementos */
+  /* 🎯 border: 1px solid sin color específico permite que se herede del tipo de alerta */
+}
+
+/* 🚨 Alerta de error - Para mostrar errores de validación */
+.alert-error {
+  background: #fff4f4; /* Fondo rojo muy claro */
+  border-color: #ffc9c9; /* Borde rojo claro */
+  color: #c92a2a; /* Texto rojo oscuro para contraste */
+  /* 🎯 La progresión de colores va de claro (fondo) a oscuro (texto) para jerarquía visual */
+}
+
+/* ✅ Alerta de éxito - Para confirmaciones positivas */
+.alert-success {
+  background: #f3f8ff; /* Fondo azul muy claro */
+  border-color: #bfd3ff; /* Borde azul claro */
+  color: #0b3d91; /* Texto azul oscuro (color corporativo) */
+  /* 🎯 Usa el mismo azul corporativo del resto de la aplicación para consistencia */
+}
+
+/* ============================
+   📱 RESPONSIVE DESIGN PARA FORMULARIOS
+   ============================
+   
+   🎯 OBJETIVO: Adaptar el formulario para pantallas pequeñas
+   
+   📚 CONCEPTOS CLAVE:
+   - Colapso de grid a una sola columna
+   - Mantenimiento de usabilidad en móviles
+   ============================ */
+
 @media (max-width: 820px) {
-  .grid-form { grid-template-columns: 1fr; }
+  /* 📝 EXPLICACIÓN: En pantallas menores a 820px, colapsamos a una sola columna */
+  .grid-form {
+    grid-template-columns: 1fr; /* Una sola columna que ocupa todo el ancho */
+    /* 🎯 Esto hace que todos los campos se apilen verticalmente en móviles */
+    /* 📱 Evita que los campos sean demasiado estrechos en pantallas pequeñas */
+  }
 }

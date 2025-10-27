@@ -1,28 +1,51 @@
 /* ============================
-   📋 Estilos específicos para la lista de pacientes
+   📋 ESTILOS ESPECÍFICOS PARA LA LISTA DE PACIENTES
+   ============================
+   
+   🎯 OBJETIVO: Crear estilos específicos que complementen main.css 
+   para la funcionalidad de listado de pacientes
+   
+   📚 CONCEPTOS CLAVE:
+   - Separación de responsabilidades CSS
+   - Overflow para tablas responsivas
+   - Flexbox para alineación de botones
    ============================ */
 
+/* 📝 EXPLICACIÓN: Barra de acciones con espaciado específico para esta vista */
 .actions-bar {
-  margin: 12px 0;
+  margin: 12px 0; /* Espaciado vertical: 12px arriba y abajo, 0 a los lados */
+  /* 🎯 Este margen se suma al espaciado definido en main.css para esta vista específica */
 }
 
+/* 📝 EXPLICACIÓN: Contenedor con scroll horizontal para tablas grandes */
 .table-wrapper {
-  overflow-x: auto;
+  overflow-x: auto; /* Permite scroll horizontal cuando la tabla es más ancha que el contenedor */
+  /* 🎯 En móviles, esto es esencial para que las tablas con muchas columnas sean usables */
+  /* 📱 El usuario podrá deslizar horizontalmente para ver todas las columnas */
 }
 
+/* 📝 EXPLICACIÓN: Estilos específicos para columnas y celdas de acciones */
 .col-actions,
 .actions-cell {
-  text-align: right;
-  white-space: nowrap;
+  text-align: right; /* Alineación a la derecha para botones de acción */
+  white-space: nowrap; /* Evita que el texto se rompa en múltiples líneas */
+  /* 🎯 white-space: nowrap es crucial para botones - mantiene el texto en una sola línea */
+  /* 📝 Esto evita que botones como "Eliminar" se vean como "Elimi-\nnar" */
 }
 
+/* 📝 EXPLICACIÓN: Contenedor flex específico para organizar botones de acción */
 .actions-cell {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  align-items: center;
+  display: flex; /* Organiza los botones horizontalmente */
+  gap: 8px; /* Espaciado uniforme de 8px entre botones */
+  justify-content: flex-end; /* Empuja todos los botones hacia la derecha */
+  align-items: center; /* Centra verticalmente los botones */
+  /* 🎯 flex-end en justify-content mantiene la alineación derecha incluso si hay botones de diferentes tamaños */
+  /* 🎯 align-items: center asegura que botones de diferentes alturas se vean alineados */
 }
 
+/* 📝 EXPLICACIÓN: Formularios que se comportan como elementos inline */
 .inline-form {
-  display: inline;
+  display: inline; /* Se comporta como elemento inline para no romper el flujo */
+  /* 🎯 Esto es importante para formularios con botón de eliminar dentro de celdas de tabla */
+  /* 📝 Sin esto, cada formulario crearía un salto de línea visual */
 }

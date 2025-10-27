@@ -1,0 +1,482 @@
+/* ============================
+   📐 LAYOUT BASE - STICKY FOOTER PATTERN
+   ============================
+   
+   🎯 OBJETIVO: Crear un layout que siempre mantenga el footer en la parte inferior
+   de la pantalla, incluso cuando hay poco contenido.
+   
+   📚 CONCEPTOS CLAVE:
+   - Flexbox para layout vertical
+   - Sticky footer con flex: 1 0 auto
+   - Viewport units (vh = viewport height)
+   ============================ */
+
+/* 📝 EXPLICACIÓN: html y body al 100% es necesario para que el sticky footer funcione */
+html,
+body {
+  height: 100%; /* Asegura que ocupen toda la altura disponible del navegador */
+}
+
+body {
+  /* 🎯 min-height: 100vh garantiza que el body ocupe al menos toda la altura visible */
+  min-height: 100vh; /* vh = viewport height (altura de la ventana del navegador) */
+
+  /* 🎯 Flexbox en dirección columna para organizar header, main, footer verticalmente */
+  display: flex;
+  flex-direction: column; /* Los elementos se apilan verticalmente */
+
+  /* 🎨 Colores base de la aplicación */
+  background: #ffffff; /* Fondo blanco limpio */
+  color: #111827; /* Texto gris muy oscuro (mejor que negro puro para legibilidad) */
+
+  /* 🎯 Eliminar márgenes por defecto del navegador */
+  margin: 0;
+}
+
+/* 📝 EXPLICACIÓN: flex-shrink: 0 evita que el header se reduzca cuando hay poco espacio */
+.site-header {
+  flex-shrink: 0; /* El header mantiene su tamaño fijo */
+}
+
+/* 📝 EXPLICACIÓN: flex: 1 0 auto hace que main ocupe todo el espacio disponible */
+main {
+  flex: 1 0 auto; /* flex-grow: 1 (crece), flex-shrink: 0 (no se reduce), flex-basis: auto */
+  padding: 32px 0 24px; /* Espaciado: arriba 32px, laterales 0, abajo 24px */
+}
+
+/* 📝 EXPLICACIÓN: margin-top: auto empuja el footer hacia abajo automáticamente */
+.site-footer {
+  margin-top: auto; /* CLAVE del sticky footer - empuja el footer al final */
+
+  /* 🎨 Estilo visual del footer */
+  background: #f8fafc; /* Gris muy claro para diferenciarlo del contenido */
+  border-top: 1px solid #e5e7eb; /* Línea sutil para separar del contenido */
+  padding: 12px 0; /* Espaciado interno vertical */
+  color: #6b7280; /* Texto gris medio (menos prominente que el contenido principal) */
+  font-size: 0.9rem; /* Tamaño de fuente ligeramente menor */
+}
+
+/* 📝 EXPLICACIÓN: Contenedor centrado con ancho máximo para mejor legibilidad */
+.container {
+  max-width: 1100px; /* Ancho máximo para evitar líneas de texto muy largas */
+  margin: 0 auto; /* Centrado horizontal automático */
+  padding: 0 20px; /* Espaciado lateral para que no toque los bordes en móviles */
+}
+
+/* ============================
+   🔝 ENCABEZADO - HEADER LAYOUT
+   ============================
+   
+   🎯 OBJETIVO: Crear un header con logo a la izquierda, título centrado y navegación a la derecha
+   
+   📚 CONCEPTOS CLAVE:
+   - Flexbox para distribución horizontal
+   - Posicionamiento absoluto para centrado perfecto
+   - Box-shadow para profundidad visual
+   ============================ */
+
+.site-header {
+  /* 🎨 Estilo visual del header */
+  background: #f8fafc; /* Fondo gris claro para diferenciarlo del contenido */
+  border-bottom: 1px solid #e5e7eb; /* Línea inferior para separación visual */
+  padding: 20px 0; /* Espaciado vertical interno */
+
+  /* 🎭 Sombra sutil para dar sensación de elevación */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* rgba permite transparencia */
+
+  /* 📝 position: relative necesario para que el título absolute funcione correctamente */
+  position: relative;
+}
+
+.header-content {
+  /* 🎯 Flexbox para distribuir elementos horizontalmente */
+  display: flex;
+  align-items: center; /* Alineación vertical al centro */
+  justify-content: space-between; /* Logo a la izquierda, nav a la derecha */
+  position: relative; /* Contexto para el posicionamiento absoluto del título */
+}
+
+/* 📝 EXPLICACIÓN: El logo mantiene proporciones naturales con height fijo */
+.logo {
+  height: 110px; /* Altura fija */
+  width: auto; /* Ancho automático para mantener proporciones */
+  margin-left: 20px; /* Separación del borde izquierdo */
+}
+
+/* 📝 EXPLICACIÓN: Título centrado usando posicionamiento absoluto */
+.system-title {
+  /* 🎯 Centrado perfecto independiente del tamaño del logo o navegación */
+  position: absolute;
+  left: 50%; /* Se posiciona al 50% del contenedor */
+  transform: translateX(-50%); /* Se desplaza 50% de su propio ancho hacia la izquierda */
+
+  /* 🎨 Estilo tipográfico */
+  font-size: 2rem; /* Tamaño grande para jerarquía visual */
+  font-weight: 700; /* Peso extra-bold para importancia */
+  color: #0b3d91; /* Azul corporativo/médico */
+  margin: 0; /* Eliminar márgenes por defecto */
+  letter-spacing: 0.5px; /* Espaciado entre letras para elegancia */
+  text-align: center; /* Centrado del texto */
+}
+
+/* 📝 EXPLICACIÓN: Navegación como lista horizontal con espaciado uniforme */
+nav {
+  display: flex; /* Elementos en línea horizontal */
+  align-items: center; /* Alineación vertical al centro */
+  gap: 24px; /* Espaciado uniforme entre enlaces */
+  margin-right: 20px; /* Separación del borde derecho */
+}
+
+/* 🎨 Estilo de enlaces de navegación */
+nav a {
+  color: #0d6efd; /* Azul estándar para enlaces */
+  text-decoration: none; /* Sin subrayado por defecto */
+  font-weight: 500; /* Peso medio para buena legibilidad */
+  font-size: 1rem; /* Tamaño estándar */
+}
+
+/* 🎭 Estados hover para retroalimentación visual */
+nav a:hover {
+  color: #084298; /* Azul más oscuro al pasar el mouse */
+  text-decoration: underline; /* Subrayado para indicar interactividad */
+}
+
+/* ============================
+   🧾 LISTADOS, TABLAS Y ACCIONES
+   ============================
+   
+   🎯 OBJETIVO: Crear componentes reutilizables para mostrar datos tabulares
+   
+   📚 CONCEPTOS CLAVE:
+   - Jerarquía tipográfica
+   - Estados alternados en tablas (zebra striping)
+   - Flexbox para acciones alineadas
+   ============================ */
+
+/* 📝 EXPLICACIÓN: Títulos de sección con jerarquía visual clara */
+h2 {
+  text-align: center; /* Centrado para dar importancia */
+  margin-top: 32px; /* Separación del header */
+  margin-bottom: 20px; /* Separación del contenido siguiente */
+  font-size: 1.8rem; /* Tamaño jerárquico */
+  font-weight: 700; /* Peso bold para importancia */
+  color: #0b3d91; /* Color corporativo consistente */
+}
+
+/* 📝 EXPLICACIÓN: Barra de acciones con botones principales */
+.actions-bar {
+  text-align: left; /* Alineación natural para botones de acción */
+  margin-top: 8px;
+  margin-bottom: 32px; /* Espacio generoso antes de la tabla */
+}
+
+/* 📝 EXPLICACIÓN: Wrapper para scroll horizontal en tablas grandes */
+.table-wrapper {
+  margin-top: 16px;
+  /* 🎯 En móviles, esto permitirá scroll horizontal si la tabla es muy ancha */
+}
+
+/* 📝 EXPLICACIÓN: Tabla con bordes colapsados para diseño limpio */
+.data-table {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  border-collapse: collapse; /* Los bordes se fusionan para evitar espacios dobles */
+  margin-top: 16px;
+  font-size: 0.95rem; /* Ligeramente más pequeño para caber más información */
+}
+
+/* 📝 EXPLICACIÓN: Celdas con bordes y espaciado uniforme */
+.data-table th,
+.data-table td {
+  border: 1px solid #e5e7eb; /* Bordes sutiles en gris claro */
+  padding: 8px 10px; /* Espaciado interno para legibilidad */
+  text-align: left; /* Alineación natural para texto */
+  vertical-align: middle; /* Centrado vertical del contenido */
+}
+
+/* 📝 EXPLICACIÓN: Encabezados de tabla diferenciados visualmente */
+.data-table th {
+  background: #f1f5f9; /* Fondo gris claro para distinguir de datos */
+  font-weight: 600; /* Peso semi-bold para jerarquía */
+}
+
+/* 📝 EXPLICACIÓN: Filas alternadas (zebra striping) para mejor legibilidad */
+.data-table tbody tr:nth-child(even) {
+  background: #f9fafb; /* Cada segunda fila con fondo ligeramente gris */
+  /* 🎯 Esto ayuda al ojo a seguir las filas horizontalmente */
+}
+
+/* 📝 EXPLICACIÓN: Columna de acciones con ancho fijo */
+.col-actions {
+  width: 180px; /* Ancho fijo para que los botones no cambien de tamaño */
+}
+
+/* 📝 EXPLICACIÓN: Contenedor flex para botones de acción alineados */
+.actions-cell {
+  display: flex; /* Organiza botones horizontalmente */
+  gap: 8px; /* Espaciado uniforme entre botones */
+  justify-content: center; /* Centrados en la celda */
+}
+
+/* 📝 EXPLICACIÓN: Formularios inline para botones que no rompan el layout */
+.inline-form {
+  display: inline-block; /* Se comporta como elemento en línea pero acepta dimensiones */
+  margin: 0; /* Sin márgenes para no afectar el layout */
+}
+
+/* ============================
+   🔘 SISTEMA DE BOTONES
+   ============================
+   
+   🎯 OBJETIVO: Crear un sistema consistente de botones reutilizables
+   
+   📚 CONCEPTOS CLAVE:
+   - Clases utilitarias reutilizables
+   - Estados hover para retroalimentación
+   - Colores semánticos (primary, secondary, danger)
+   ============================ */
+
+/* 📝 EXPLICACIÓN: Estilos base compartidos por todos los botones */
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  border: none; /* Sin bordes por defecto del navegador */
+  padding: 6px 12px; /* Espaciado interno cómodo para el texto */
+  border-radius: 6px; /* Esquinas redondeadas modernas */
+  cursor: pointer; /* Cursor de mano para indicar interactividad */
+  text-decoration: none; /* Sin subrayado cuando se usa en enlaces */
+  display: inline-block; /* Permite dimensiones en elementos inline */
+}
+
+/* 🎨 Botón primario - Para acciones principales */
+.btn-primary {
+  background: #0d6efd; /* Azul estándar de Bootstrap */
+  color: white; /* Texto blanco para contraste */
+}
+.btn-primary:hover {
+  background: #0b5ed7; /* Azul más oscuro al hacer hover */
+}
+
+/* 🎨 Botón secundario - Para acciones secundarias */
+.btn-secondary {
+  background: #6b7280; /* Gris medio neutral */
+  color: white;
+}
+.btn-secondary:hover {
+  background: #555b61; /* Gris más oscuro al hacer hover */
+}
+
+/* 🎨 Botón de peligro - Para acciones destructivas */
+.btn-danger {
+  background: #dc3545; /* Rojo para indicar peligro */
+  color: white;
+}
+.btn-danger:hover {
+  background: #bb2d3b; /* Rojo más oscuro al hacer hover */
+}
+
+/* ============================
+   🗑️ MODAL DE CONFIRMACIÓN
+   ============================
+   
+   🎯 OBJETIVO: Crear un modal accesible y visualmente atractivo
+   
+   📚 CONCEPTOS CLAVE:
+   - Overlay con z-index alto
+   - Transiciones suaves
+   - Centrado perfecto con flexbox
+   - Estados de visibilidad animados
+   ============================ */
+
+/* 📝 EXPLICACIÓN: Overlay que cubre toda la pantalla */
+.modal-overlay {
+  /* 🎯 Posicionamiento fijo para cubrir toda la viewport */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+
+  /* 🎨 Fondo semi-transparente oscuro */
+  background: rgba(0, 0, 0, 0.5) !important; /* rgba(rojo, verde, azul, transparencia) */
+
+  /* 🎯 Flexbox para centrar el modal perfectamente */
+  display: flex !important;
+  align-items: center !important; /* Centrado vertical */
+  justify-content: center !important; /* Centrado horizontal */
+
+  /* 🎭 Z-index muy alto para aparecer sobre todo */
+  z-index: 9999 !important; /* Número alto para estar por encima de otros elementos */
+
+  /* 🎭 Estados de animación */
+  opacity: 0; /* Invisible por defecto */
+  visibility: hidden; /* No interactivo por defecto */
+  transition: all 0.3s ease; /* Animación suave de 300ms */
+}
+
+/* 📝 EXPLICACIÓN: Estado visible del modal */
+.modal-overlay.show {
+  opacity: 1; /* Completamente visible */
+  visibility: visible; /* Interactivo */
+}
+
+/* 📝 EXPLICACIÓN: Contenido del modal con diseño moderno */
+.modal-content {
+  background: white; /* Fondo blanco para contraste */
+  border-radius: 12px; /* Esquinas muy redondeadas para look moderno */
+  padding: 32px; /* Espaciado interno generoso */
+  max-width: 450px; /* Ancho máximo para no ser muy ancho */
+  width: 90%; /* 90% del ancho en móviles */
+
+  /* 🎭 Sombra elegante para profundidad */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* 🎭 Animación de entrada */
+  transform: scale(0.9) translateY(-20px); /* Inicia más pequeño y arriba */
+  transition: all 0.3s ease;
+}
+
+/* 📝 EXPLICACIÓN: Animación del contenido cuando el modal se muestra */
+.modal-overlay.show .modal-content {
+  transform: scale(1) translateY(0); /* Tamaño normal y posición final */
+}
+
+/* 📝 EXPLICACIÓN: Header del modal con icono y título */
+.modal-header {
+  display: flex; /* Icono y título en línea */
+  align-items: center; /* Alineados verticalmente */
+  margin-bottom: 20px; /* Separación del cuerpo */
+}
+
+/* 📝 EXPLICACIÓN: Icono circular con fondo de color */
+.modal-icon {
+  width: 48px;
+  height: 48px;
+  background: #fef2f2; /* Fondo rojo muy claro */
+  border-radius: 50%; /* Círculo perfecto */
+  display: flex;
+  align-items: center; /* Icono centrado verticalmente */
+  justify-content: center; /* Icono centrado horizontalmente */
+  margin-right: 16px; /* Separación del título */
+  flex-shrink: 0; /* No se reduce si falta espacio */
+}
+
+.modal-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #dc2626; /* Rojo para icono de advertencia */
+}
+
+/* 📝 EXPLICACIÓN: Título del modal */
+.modal-title {
+  margin: 0; /* Sin márgenes por defecto */
+  font-size: 1.25rem; /* Tamaño prominente */
+  font-weight: 600; /* Semi-bold */
+  color: #111827; /* Gris muy oscuro */
+}
+
+/* 📝 EXPLICACIÓN: Cuerpo del modal con el mensaje */
+.modal-body {
+  margin-bottom: 24px; /* Separación de los botones */
+}
+
+.modal-text {
+  color: #6b7280; /* Gris medio para texto secundario */
+  line-height: 1.5; /* Altura de línea para legibilidad */
+  margin-bottom: 12px;
+}
+
+/* 📝 EXPLICACIÓN: Nombre del paciente destacado visualmente */
+.patient-name {
+  font-weight: 600; /* Semi-bold para importancia */
+  color: #111827; /* Color oscuro para contraste */
+  background: #f3f4f6; /* Fondo gris claro para destacar */
+  padding: 8px 12px; /* Espaciado interno */
+  border-radius: 6px; /* Esquinas redondeadas */
+  display: inline-block; /* Permite padding y se ajusta al contenido */
+  margin: 8px 0; /* Separación vertical */
+}
+
+/* 📝 EXPLICACIÓN: Mensaje de advertencia en rojo */
+.modal-warning {
+  color: #dc2626; /* Rojo para advertencia */
+  font-weight: 500; /* Peso medio para énfasis */
+  font-size: 0.9rem; /* Ligeramente más pequeño */
+}
+
+/* 📝 EXPLICACIÓN: Contenedor de botones del modal */
+.modal-actions {
+  display: flex; /* Botones en línea */
+  gap: 12px; /* Espaciado entre botones */
+  justify-content: flex-end; /* Alineados a la derecha */
+}
+
+/* 📝 EXPLICACIÓN: Estilos base para botones del modal */
+.modal-btn {
+  border: none;
+  padding: 10px 20px; /* Más padding que botones regulares */
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease; /* Animación rápida en hover */
+  min-width: 100px; /* Ancho mínimo para consistencia */
+}
+
+/* 🎨 Botón de cancelar */
+.modal-btn-cancel {
+  background: #f3f4f6; /* Gris claro */
+  color: #374151; /* Texto gris oscuro */
+}
+
+.modal-btn-cancel:hover {
+  background: #e5e7eb; /* Gris ligeramente más oscuro */
+}
+
+/* 🎨 Botón de eliminar */
+.modal-btn-delete {
+  background: #dc2626; /* Rojo de peligro */
+  color: white;
+}
+
+.modal-btn-delete:hover {
+  background: #b91c1c; /* Rojo más oscuro */
+}
+
+/* ============================
+   📱 RESPONSIVE DESIGN
+   ============================
+   
+   🎯 OBJETIVO: Adaptar el diseño a pantallas pequeñas
+   
+   📚 CONCEPTOS CLAVE:
+   - Media queries para diferentes tamaños de pantalla
+   - Reducción progresiva de elementos
+   - Mantenimiento de usabilidad en móviles
+   ============================ */
+
+@media (max-width: 820px) {
+  /* 📝 EXPLICACIÓN: En pantallas menores a 820px, reducimos tamaños para mejor fit */
+
+  .logo {
+    height: 80px; /* Logo más pequeño en móviles */
+  }
+
+  .system-title {
+    font-size: 1.6rem; /* Título más pequeño para caber mejor */
+  }
+
+  nav {
+    gap: 16px; /* Menos espacio entre enlaces de navegación */
+  }
+
+  .container {
+    padding: 0 16px; /* Menos padding lateral en móviles */
+  }
+
+  .col-actions {
+    width: 140px; /* Columna de acciones más estrecha */
+  }
+
+  .actions-cell {
+    gap: 6px; /* Menos espacio entre botones */
+  }
+}
