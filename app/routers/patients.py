@@ -17,16 +17,6 @@ _SEEDED = False
 
 
 # ----------------------------- Helpers -----------------------------
-def _map_sex_es_to_en(s: str) -> str:
-    s = (s or "").strip().lower()
-    if s in ("masculino", "m"):
-        return "male"
-    if s in ("femenino", "f"):
-        return "female"
-    if s in ("otro", "other", "o"):
-        return "other"
-    return s  # ya venía en inglés
-
 def _errors_to_map(exc: ValidationError) -> Dict[str, List[str]]:
     """Convierte ValidationError a dict campo -> [mensajes] con traducción a español."""
     traducciones = {
@@ -185,7 +175,7 @@ async def post_create_patient(
         "first_name": (first_name or "").strip(),
         "last_name":  (last_name  or "").strip(),
         "date_of_birth": (date_of_birth or "").strip(),
-        "sex_at_birth": _map_sex_es_to_en(sex_at_birth or ""),
+        "sex_at_birth": (sex_at_birth or "").strip(),
         "gender_identity": (gender_identity or "").strip() or None,
         "email": (email or "").strip() or None,
         "phone": (phone or "").strip() or None,
@@ -290,7 +280,7 @@ async def post_edit_patient(
         "first_name": (first_name or "").strip(),
         "last_name":  (last_name  or "").strip(),
         "date_of_birth": (date_of_birth or "").strip(),
-        "sex_at_birth": _map_sex_es_to_en(sex_at_birth or ""),
+        "sex_at_birth": (sex_at_birth or "").strip(),
         "gender_identity": (gender_identity or "").strip() or None,
         "email": (email or "").strip() or None,
         "phone": (phone or "").strip() or None,

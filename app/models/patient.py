@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, EmailStr
 from datetime import date
 from typing import Optional, Literal
 
-SexAtBirth = Literal["male", "female", "other"]
+SexAtBirth = Literal["Masculino", "Femenino", "Otro"]
 
 class PatientBase(BaseModel):
     first_name: str = Field(..., min_length=1, max_length=60)
