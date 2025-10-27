@@ -40,9 +40,25 @@ def _find_patient_index(pid: str) -> Optional[int]:
     return next((i for i, p in enumerate(PATIENTS) if p.get("patient_id") == pid), None)
 
 def _float_or_none(s: Optional[str]) -> Optional[float]:
-    if not s or not s.strip():
+    """
+    Convierte una cadena en float, o devuelve None si:
+      - está vacía,
+      - contiene espacios,
+      - o no se puede convertir (por ejemplo 'abc').
+    """
+    if s is None:
         return None
-    return float(s)
+
+    s = str(s).strip()
+    if s == "":
+        return None
+
+    try:
+        return float(s)
+    except ValueError:
+        # Si no es numérico, devolvemos None en lugar de lanzar excepción.
+        return None
+
 
 def _age_years(dob: Optional[date]) -> Optional[int]:
     if not dob:
