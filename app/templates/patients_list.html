@@ -1,76 +1,90 @@
-{% extends "layout.html" %}
-{% block title %}MEDIMIC — Listar pacientes{% endblock %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-{# ✅ CSS específico de esta vista #}
-{% block extra_css %}
+  <title>MEDIMIC — Listar pacientes</title>
+
+  <!-- CSS global -->
+  <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
+  
+  <!-- CSS específico de esta vista -->
   <link rel="stylesheet" href="{{ url_for('static', path='css/patients_list.css') }}">
-{% endblock %}
+</head>
+<body>
+  <!-- Componente Header -->
+  {% include "components/header.html" %}
 
-{% block content %}
-  <h2>Listado de Pacientes</h2>
+  <main class="container">
+    <h2>Listado de Pacientes</h2>
 
-  <div class="actions-bar">
-    <a class="btn-primary" href="/patients/create">Agregar paciente</a>
-  </div>
-
-  {% if patients and patients|length %}
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Fecha nac.</th>
-            <th>Sexo</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>IMC</th>
-            <th>Categoría</th>
-            <th class="col-actions">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-  {% for p in patients %}
-    <tr>
-      <td>{{ p.computed.display_name }}</td>
-      <td>{{ p.date_of_birth or "—" }}</td>
-      <td>{{ p.sex_at_birth or "—" }}</td>
-      <td>{{ p.email or "—" }}</td>
-      <td>{{ p.phone or "—" }}</td>
-      <td>
-        {% if p.bmi_last is not none %}
-          {{ "%.2f"|format(p.bmi_last) }}
-        {% else %}
-          — 
-        {% endif %}
-      </td>
-      <td>{{ p.bmi_category_last or "—" }}</td>
-      <td class="actions-cell">
-        {# ✏️ Botón Modificar (nuevo) #}
-        <a class="btn-secondary" href="/patients/{{ p.patient_id }}/edit">
-          Modificar
-        </a>
-
-        {# 🗑️ Botón Eliminar con confirmación JS #}
-        <form
-          action="/patients/{{ p.patient_id }}/delete"
-          method="post"
-          class="inline-form"
-          onsubmit="return confirmDelete(this)"
-          data-display-name="{{ p.computed.display_name }}">
-          <button type="submit" class="btn-danger">Eliminar</button>
-        </form>
-      </td>
-    </tr>
-  {% endfor %}
-</tbody>
-
-      </table>
+    <div class="actions-bar">
+      <a class="btn-primary" href="/patients/create">Agregar paciente</a>
     </div>
-  {% else %}
-    <p>No hay pacientes para mostrar.</p>
-  {% endif %}
-{% endblock %}
 
-{% block scripts %}
+    {% if patients and patients|length %}
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Fecha nac.</th>
+              <th>Sexo</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>IMC</th>
+              <th>Categoría</th>
+              <th class="col-actions">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+    {% for p in patients %}
+      <tr>
+        <td>{{ p.computed.display_name }}</td>
+        <td>{{ p.date_of_birth or "—" }}</td>
+        <td>{{ p.sex_at_birth or "—" }}</td>
+        <td>{{ p.email or "—" }}</td>
+        <td>{{ p.phone or "—" }}</td>
+        <td>
+          {% if p.bmi_last is not none %}
+            {{ "%.2f"|format(p.bmi_last) }}
+          {% else %}
+            — 
+          {% endif %}
+        </td>
+        <td>{{ p.bmi_category_last or "—" }}</td>
+        <td class="actions-cell">
+          {# ✏️ Botón Modificar (nuevo) #}
+          <a class="btn-secondary" href="/patients/{{ p.patient_id }}/edit">
+            Modificar
+          </a>
+
+          {# 🗑️ Botón Eliminar con confirmación JS #}
+          <form
+            action="/patients/{{ p.patient_id }}/delete"
+            method="post"
+            class="inline-form"
+            onsubmit="return confirmDelete(this)"
+            data-display-name="{{ p.computed.display_name }}">
+            <button type="submit" class="btn-danger">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+
+        </table>
+      </div>
+    {% else %}
+      <p>No hay pacientes para mostrar.</p>
+    {% endif %}
+  </main>
+
+  <!-- Componente Footer -->
+  {% include "components/footer.html" %}
+
+  <!-- JS por vista -->
   <script src="{{ url_for('static', path='js/patients_list.js') }}" defer></script>
-{% endblock %}
+</body>
+</html>
