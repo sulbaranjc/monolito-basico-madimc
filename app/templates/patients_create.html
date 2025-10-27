@@ -68,12 +68,30 @@
 
         <label>
           <span>Altura (cm)</span>
-          <input name="height_cm" inputmode="decimal" placeholder="Ej.: 174" value="{{ form_data.height_cm or '' }}" />
+          <input
+            type="number"
+            name="height_cm"
+            step="0.1"
+            min="50"
+            max="250"
+            placeholder="Ej.: 174"
+            value="{{ form_data.height_cm or '' }}"
+            required
+          />
         </label>
 
         <label>
           <span>Peso (kg)</span>
-          <input name="weight_kg" inputmode="decimal" placeholder="Ej.: 82.5" value="{{ form_data.weight_kg or '' }}" />
+          <input
+            type="number"
+            name="weight_kg"
+            step="0.1"
+            min="10"
+            max="300"
+            placeholder="Ej.: 82.5"
+            value="{{ form_data.weight_kg or '' }}"
+            required
+          />
         </label>
 
         <label class="full checkbox">
