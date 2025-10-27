@@ -1,5 +1,28 @@
-.actions-bar { margin: 12px 0; }
-.table-wrapper { overflow-x: auto; }
-.col-actions, .actions-cell { text-align: right; white-space: nowrap; }
-.actions-cell { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
-.inline-form { display: inline; }
+/* ============================
+   📋 Estilos específicos para la lista de pacientes
+   ============================ */
+
+.actions-bar {
+  margin: 12px 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.col-actions,
+.actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.inline-form {
+  display: inline;
+}
