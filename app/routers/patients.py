@@ -27,8 +27,7 @@ def _errors_to_map(exc: ValidationError) -> Dict[str, List[str]]:
         "Input should be a valid string": "Debe ingresar texto válido.",
         "Input should be a valid boolean": "Debe seleccionar un valor válido.",
         "Input should be": "Valor inválido. Debe seleccionar Masculino, Femenino u Otro.",
-        "Value error, Debes aceptar el consentimiento para el tratamiento de datos.": 
-            "Debes aceptar el consentimiento para el tratamiento de datos.",
+        "Value error, Debes aceptar el consentimiento para el tratamiento de datos.": "Debes aceptar el consentimiento para el tratamiento de datos.",
     }
 
     out: Dict[str, List[str]] = {}
@@ -54,6 +53,7 @@ def _errors_to_map(exc: ValidationError) -> Dict[str, List[str]]:
 
 def _find_patient_index(pid: str) -> Optional[int]:
     return next((i for i, p in enumerate(PATIENTS) if p.get("patient_id") == pid), None)
+
 
 def _float_or_none(s: Optional[str]) -> Optional[float]:
     """
@@ -82,9 +82,11 @@ def _age_years(dob: Optional[date]) -> Optional[int]:
     t = date.today()
     return max(0, t.year - dob.year - ((t.month, t.day) < (dob.month, dob.day)))
 
+
 def _calc_bmi(weight_kg: float, height_cm: float) -> float:
     h = height_cm / 100.0
     return round(weight_kg / (h * h), 2)
+
 
 def _bmi_category(bmi: float) -> str:
     if bmi < 18.5:
@@ -94,6 +96,7 @@ def _bmi_category(bmi: float) -> str:
     if bmi < 30.0:
         return "sobrepeso"
     return "obesidad"
+
 
 def _update_computed_and_bmi(rec: Dict[str, Any]) -> None:
     # computed
@@ -107,11 +110,15 @@ def _update_computed_and_bmi(rec: Dict[str, Any]) -> None:
         dob = None
 
     rec.setdefault("computed", {})
-    rec["computed"]["display_name"] = f"{rec.get('last_name','')}, {rec.get('first_name','')}".strip().strip(",")
+    rec["computed"][
+        "display_name"
+    ] = f"{rec.get('last_name','')}, {rec.get('first_name','')}".strip().strip(",")
     age = _age_years(dob)
     rec["computed"]["age_years"] = age
     rec["computed"]["is_adult"] = bool(age is not None and age >= 18)
-    rec["computed"]["contactable"] = bool((rec.get("email") or "").strip() or (rec.get("phone") or "").strip())
+    rec["computed"]["contactable"] = bool(
+        (rec.get("email") or "").strip() or (rec.get("phone") or "").strip()
+    )
 
     # BMI
     h, w = rec.get("height_cm"), rec.get("weight_kg")
@@ -128,6 +135,7 @@ def _update_computed_and_bmi(rec: Dict[str, Any]) -> None:
         rec["bmi_last_measured_at"] = None
         rec["bmi_inputs_updated_at"] = None
 
+
 def seed_patients_once() -> None:
     global _SEEDED, PATIENTS
     if _SEEDED or PATIENTS:
@@ -140,10 +148,11 @@ def seed_patients_once() -> None:
 @router.get("")
 async def list_patients(request: Request):
     seed_patients_once()
-    patients_sorted = sorted(PATIENTS, key=lambda p: (p.get("last_name",""), p.get("first_name","")))
+    patients_sorted = sorted(
+        PATIENTS, key=lambda p: (p.get("last_name", ""), p.get("first_name", ""))
+    )
     return request.app.state.templates.TemplateResponse(
-        "patients_list.html",
-        {"request": request, "patients": patients_sorted}
+        "patients_list.html", {"request": request, "patients": patients_sorted}
     )
 
 
@@ -151,7 +160,7 @@ async def list_patients(request: Request):
 async def get_create_patient(request: Request):
     return request.app.state.templates.TemplateResponse(
         "patients_create.html",
-        {"request": request, "form_data": {}, "errors": {}, "errors_list": []}
+        {"request": request, "form_data": {}, "errors": {}, "errors_list": []},
     )
 
 
@@ -161,8 +170,8 @@ async def post_create_patient(
     # ⚠️ Todos opcionales para evitar 422 de FastAPI y manejar Pydantic nosotros:
     first_name: Optional[str] = Form(None),
     last_name: Optional[str] = Form(None),
-    date_of_birth: Optional[str] = Form(None),     # YYYY-MM-DD
-    sex_at_birth: Optional[str] = Form(None),      # ES -> EN para validar
+    date_of_birth: Optional[str] = Form(None),  # YYYY-MM-DD
+    sex_at_birth: Optional[str] = Form(None),  # ES -> EN para validar
     gender_identity: Optional[str] = Form(None),
     email: Optional[str] = Form(None),
     phone: Optional[str] = Form(None),
@@ -173,7 +182,7 @@ async def post_create_patient(
 ):
     form_for_validation = {
         "first_name": (first_name or "").strip(),
-        "last_name":  (last_name  or "").strip(),
+        "last_name": (last_name or "").strip(),
         "date_of_birth": (date_of_birth or "").strip(),
         "sex_at_birth": (sex_at_birth or "").strip(),
         "gender_identity": (gender_identity or "").strip() or None,
@@ -203,9 +212,13 @@ async def post_create_patient(
         form_back["weight_kg"] = weight_kg
         return request.app.state.templates.TemplateResponse(
             "patients_create.html",
-            {"request": request, "form_data": form_back, "errors": errors_map,
-             "errors_list": [msg for v in errors_map.values() for msg in v]},
-            status_code=400
+            {
+                "request": request,
+                "form_data": form_back,
+                "errors": errors_map,
+                "errors_list": [msg for v in errors_map.values() for msg in v],
+            },
+            status_code=400,
         )
 
     # A partir de aquí, clean está garantizado por el early return anterior
@@ -213,14 +226,16 @@ async def post_create_patient(
 
     now = datetime.utcnow().isoformat() + "Z"
     rec: Dict[str, Any] = clean.model_dump()
-    rec.update({
-        "patient_id": str(uuid4()),
-        "created_at": now,
-        "updated_at": now,
-        "sex_at_birth": sex_at_birth or "",   # mantener ES para la UI
-        "height_cm": _float_or_none(height_cm),
-        "weight_kg": _float_or_none(weight_kg),
-    })
+    rec.update(
+        {
+            "patient_id": str(uuid4()),
+            "created_at": now,
+            "updated_at": now,
+            "sex_at_birth": sex_at_birth or "",  # mantener ES para la UI
+            "height_cm": _float_or_none(height_cm),
+            "weight_kg": _float_or_none(weight_kg),
+        }
+    )
 
     _update_computed_and_bmi(rec)
     PATIENTS.append(rec)
@@ -236,10 +251,10 @@ async def get_edit_patient(request: Request, patient_id: str):
 
     p = PATIENTS[idx]
     form_data = {
-        "first_name": p.get("first_name",""),
-        "last_name": p.get("last_name",""),
-        "date_of_birth": p.get("date_of_birth",""),
-        "sex_at_birth": p.get("sex_at_birth",""),  # ES
+        "first_name": p.get("first_name", ""),
+        "last_name": p.get("last_name", ""),
+        "date_of_birth": p.get("date_of_birth", ""),
+        "sex_at_birth": p.get("sex_at_birth", ""),  # ES
         "gender_identity": p.get("gender_identity") or "",
         "email": p.get("email") or "",
         "phone": p.get("phone") or "",
@@ -250,8 +265,13 @@ async def get_edit_patient(request: Request, patient_id: str):
     }
     return request.app.state.templates.TemplateResponse(
         "patients_edit.html",
-        {"request": request, "patient_id": patient_id, "form_data": form_data,
-         "errors": {}, "errors_list": []}
+        {
+            "request": request,
+            "patient_id": patient_id,
+            "form_data": form_data,
+            "errors": {},
+            "errors_list": [],
+        },
     )
 
 
@@ -263,7 +283,7 @@ async def post_edit_patient(
     first_name: Optional[str] = Form(None),
     last_name: Optional[str] = Form(None),
     date_of_birth: Optional[str] = Form(None),
-    sex_at_birth: Optional[str] = Form(None),      # ES -> EN para validar
+    sex_at_birth: Optional[str] = Form(None),  # ES -> EN para validar
     gender_identity: Optional[str] = Form(None),
     email: Optional[str] = Form(None),
     phone: Optional[str] = Form(None),
@@ -278,16 +298,18 @@ async def post_edit_patient(
 
     form_for_validation = {
         "first_name": (first_name or "").strip(),
-        "last_name":  (last_name  or "").strip(),
+        "last_name": (last_name or "").strip(),
         "date_of_birth": (date_of_birth or "").strip(),
         "sex_at_birth": (sex_at_birth or "").strip(),
         "gender_identity": (gender_identity or "").strip() or None,
         "email": (email or "").strip() or None,
         "phone": (phone or "").strip() or None,
         "notes": (notes or "").strip() or None,
-        "consent_data_processing": (consent_data_processing == "on")
+        "consent_data_processing": (
+            (consent_data_processing == "on")
             if consent_data_processing is not None
-            else bool(PATIENTS[idx].get("consent_data_processing", True)),
+            else bool(PATIENTS[idx].get("consent_data_processing", True))
+        ),
     }
 
     errors_map: Dict[str, List[str]] = {}
@@ -309,9 +331,14 @@ async def post_edit_patient(
         form_back["weight_kg"] = weight_kg
         return request.app.state.templates.TemplateResponse(
             "patients_edit.html",
-            {"request": request, "patient_id": patient_id, "form_data": form_back,
-             "errors": errors_map, "errors_list": [msg for v in errors_map.values() for msg in v]},
-            status_code=400
+            {
+                "request": request,
+                "patient_id": patient_id,
+                "form_data": form_back,
+                "errors": errors_map,
+                "errors_list": [msg for v in errors_map.values() for msg in v],
+            },
+            status_code=400,
         )
 
     assert clean is not None
@@ -319,12 +346,14 @@ async def post_edit_patient(
     now = datetime.utcnow().isoformat() + "Z"
     rec = PATIENTS[idx]
     rec.update(clean.model_dump())
-    rec.update({
-        "sex_at_birth": sex_at_birth or "",  # ES para UI
-        "height_cm": _float_or_none(height_cm),
-        "weight_kg": _float_or_none(weight_kg),
-        "updated_at": now,
-    })
+    rec.update(
+        {
+            "sex_at_birth": sex_at_birth or "",  # ES para UI
+            "height_cm": _float_or_none(height_cm),
+            "weight_kg": _float_or_none(weight_kg),
+            "updated_at": now,
+        }
+    )
     _update_computed_and_bmi(rec)
 
     return RedirectResponse(url="/patients", status_code=303)

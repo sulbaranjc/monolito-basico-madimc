@@ -14,9 +14,11 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="stat
 
 app.include_router(patients_router)
 
+
 @app.get("/")
 def root():
     return RedirectResponse(url="/patients", status_code=303)
+
 
 @app.get("/health")
 def health():

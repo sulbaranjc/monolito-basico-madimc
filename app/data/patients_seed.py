@@ -19,12 +19,12 @@ SEEDED_PATIENTS = {
         "bmi_last_measured_at": "2025-10-01T10:00:00Z",
         "computed": {
             "display_name": "Doe, John",
-            "age_years": 37,          # aprox; es seed educativo
+            "age_years": 37,  # aprox; es seed educativo
             "is_adult": True,
-            "contactable": True
+            "contactable": True,
         },
         "created_at": "2025-10-01T10:00:00Z",
-        "updated_at": "2025-10-01T10:00:00Z"
+        "updated_at": "2025-10-01T10:00:00Z",
     },
     "seed-2": {
         "patient_id": "seed-2",
@@ -45,10 +45,10 @@ SEEDED_PATIENTS = {
             "display_name": "Pérez, María",
             "age_years": 31,
             "is_adult": True,
-            "contactable": True
+            "contactable": True,
         },
         "created_at": "2025-10-01T11:00:00Z",
-        "updated_at": "2025-10-01T11:00:00Z"
+        "updated_at": "2025-10-01T11:00:00Z",
     },
     "seed-3": {
         "patient_id": "seed-3",
@@ -69,9 +69,9 @@ SEEDED_PATIENTS = {
             "display_name": "Kim, Alex",
             "age_years": 24,
             "is_adult": True,
-            "contactable": False
+            "contactable": False,
         },
         "created_at": "2025-10-01T12:00:00Z",
-        "updated_at": "2025-10-01T12:00:00Z"
-    }
+        "updated_at": "2025-10-01T12:00:00Z",
+    },
 }
