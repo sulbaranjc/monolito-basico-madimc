@@ -7,10 +7,10 @@
   <title>MEDIMIC — Listar pacientes</title>
 
   <!-- CSS global -->
-  <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}?v={{ range(1000000) | random }}">
   
   <!-- CSS específico de esta vista -->
-  <link rel="stylesheet" href="{{ url_for('static', path='css/patients_list.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/patients_list.css') }}?v={{ range(1000000) | random }}">
 </head>
 <body>
   <!-- Componente Header -->
@@ -84,7 +84,16 @@
   <!-- Componente Footer -->
   {% include "components/footer.html" %}
 
-  <!-- JS por vista -->
-  <script src="{{ url_for('static', path='js/patients_list.js') }}" defer></script>
+  <!-- JS por vista (cache-bust dinámico para evitar versionado en dev) -->
+  <script>
+    (function(){
+      const s = document.createElement('script');
+      s.src = "{{ url_for('static', path='js/patients_list.js') }}" + '?v=' + Date.now();
+      // Cargar de forma no-asincrónica para asegurar que la función global
+      // `confirmDelete` esté disponible antes de cualquier submit/onsubmit.
+      s.async = false;
+      document.body.appendChild(s);
+    })();
+  </script>
 </body>
 </html>
