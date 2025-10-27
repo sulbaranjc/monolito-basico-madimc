@@ -28,13 +28,39 @@ def _map_sex_es_to_en(s: str) -> str:
     return s  # ya venía en inglés
 
 def _errors_to_map(exc: ValidationError) -> Dict[str, List[str]]:
-    """Convierte ValidationError a dict campo -> [mensajes]."""
+    """Convierte ValidationError a dict campo -> [mensajes] con traducción a español."""
+    traducciones = {
+        "String should have at least 1 character": "El texto debe tener al menos 1 carácter.",
+        "String should have at most": "El texto es demasiado largo.",
+        "Input should be a valid date or datetime": "Debe ingresar una fecha válida.",
+        "Input should be a valid email address": "Debe ingresar un correo electrónico válido.",
+        "Input should be a valid string": "Debe ingresar texto válido.",
+        "Input should be a valid boolean": "Debe seleccionar un valor válido.",
+        "Input should be": "Valor inválido. Debe seleccionar Masculino, Femenino u Otro.",
+        "Value error, Debes aceptar el consentimiento para el tratamiento de datos.": 
+            "Debes aceptar el consentimiento para el tratamiento de datos.",
+    }
+
     out: Dict[str, List[str]] = {}
     for e in exc.errors():
         loc_tuple = e.get("loc", [])
         loc = str(loc_tuple[-1]) if loc_tuple else "non_field"
-        out.setdefault(loc, []).append(e.get("msg", "Valor inválido"))
+        msg = e.get("msg", "Valor inválido")
+
+        # Buscar traducción exacta o parcial
+        traducido = None
+        if msg in traducciones:
+            traducido = traducciones[msg]
+        else:
+            # búsqueda parcial (por ejemplo, 'Input should be')
+            for key, val in traducciones.items():
+                if msg.startswith(key):
+                    traducido = val
+                    break
+
+        out.setdefault(loc, []).append(traducido or msg)
     return out
+
 
 def _find_patient_index(pid: str) -> Optional[int]:
     return next((i for i, p in enumerate(PATIENTS) if p.get("patient_id") == pid), None)
